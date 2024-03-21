@@ -1,8 +1,10 @@
 var express = require("express");
 var router = express.Router();
-const AdminController = require("./../../controller/master_controller/AdminController");
+const RolePermissionController = require("../../controller/master_controller/RolePermissionController");
+const UserRoleController = require("./../../controller/master_controller/UserRoleController");
 const RoleController = require("./../../controller/master_controller/RoleController");
 const PermissionController = require("./../../controller/master_controller/PermissionController");
+
 // Roles
 router.get("/roles", RoleController.getAllRole);
 router.post("/role", RoleController.insertRole);
@@ -16,9 +18,11 @@ router.put("/permission/:id", PermissionController.updatePermission);
 router.delete("/permission/:id", PermissionController.deletePermission);
 
 // User Role
-router.get("/user-data/user", AdminController.getAllUserRole);
-router.post("/user-data/user", AdminController.insertUserRole);
-router.put("/user-data/user/:nik", AdminController.updateUserRole);
-router.delete("/user-data/user/:nik", AdminController.deleteUserRole);
-router.get("/user-data/role", AdminController.getAllRolePermission);
+router.get("/user-data/user", UserRoleController.getAllUserRole);
+router.post("/user-data/user", UserRoleController.insertUserRole);
+router.put("/user-data/user/:nik", UserRoleController.updateUserRole);
+router.delete("/user-data/user/:nik", UserRoleController.deleteUserRole);
+
+// User Permission
+router.get("/user-data/role", RolePermissionController.getAllRolePermission);
 module.exports = router;
