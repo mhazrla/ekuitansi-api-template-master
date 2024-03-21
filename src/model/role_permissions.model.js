@@ -1,9 +1,6 @@
 const aio_cms = require("./../database/sakila.config");
 
-getAllRoles = async () => await aio_cms("mst_user_role").select("*");
-
-getAllPermissions = async () =>
-  await aio_cms("mst_user_permission").select("*");
+// User Roles
 
 getAllUserRoles = async () =>
   await aio_cms("mst_user")
@@ -14,6 +11,8 @@ getAllUserRoles = async () =>
       "mst_user_role.role_name"
     )
     .join("mst_user_role", "mst_user.role_id", "=", "mst_user_role.id");
+
+getUserRole = async (nik) => await aio_cms("mst_user").where("nik", nik);
 
 getAllRolePermissions = async () => {
   const result = await aio_cms("mst_user_role")
@@ -65,11 +64,23 @@ getUserPermission = async (nik) => {
 
   return result;
 };
+
+insertUserRole = async (data) => await aio_cms("mst_user").insert(data);
+
+updateUserRole = async (nik, data) => {
+  await aio_cms("mst_user").where("nik", nik).update(data);
+};
+
+deleteUserRole = async (nik) =>
+  await aio_cms("mst_user").where("nik", nik).del();
+
 module.exports = {
-  getAllRoles,
-  getAllPermissions,
+  getUserRole,
   getAllUserRoles,
   getAllRolePermissions,
   getAllRolePermissions,
   getUserPermission,
+  insertUserRole,
+  updateUserRole,
+  deleteUserRole,
 };
