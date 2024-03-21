@@ -51,7 +51,26 @@ getUserPermission = async (nik) => {
   return result;
 };
 
+getRolePermission = async (role_id) => {
+  return await aio_cms("map_role_permission").where("role_id", role_id);
+};
+
+insertRolePermission = async (data) => {
+  await aio_cms("map_role_permission").insert(data);
+};
+
+updateRolePermission = async (role_id, data) =>
+  await aio_cms("map_role_permission").where("role_id", role_id).update(data);
+
+deleteRolePermission = async (role_id) => {
+  await aio_cms("map_role_permission").where("role_id", role_id).del();
+};
+
 module.exports = {
   getAllRolePermissions,
   getUserPermission,
+  getRolePermission,
+  insertRolePermission,
+  updateRolePermission,
+  deleteRolePermission,
 };

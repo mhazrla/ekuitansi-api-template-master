@@ -25,4 +25,7 @@ router.delete("/user-data/user/:nik", UserRoleController.deleteUserRole);
 
 // User Permission
 router.get("/user-data/role", RolePermissionController.getAllRolePermission);
+router.post("/user-data/role", RolePermissionController.insertRolePermission);
+router.put("/user-data/role/:role_id", RolePermissionController.updateRolePermission);
+router.delete("/user-data/role/:role_id", RolePermissionController.deleteRolePermission);
 module.exports = router;
