@@ -6,20 +6,36 @@ getAllUserRoles = async () =>
       "mst_user.id as user_id",
       "mst_user.nik",
       "mst_user.name",
+      "mst_user.email",
+      "mst_user.phone_number",
+      "mst_user.work_location",
       "mst_user_role.role_name"
     )
     .join("mst_user_role", "mst_user.role_id", "=", "mst_user_role.id");
 
-getUserRole = async (nik) => await aio_cms("mst_user").where("nik", nik);
+getUserRole = async (id) =>
+  await aio_cms("mst_user")
+    .where("mst_user.id", id)
+    .join("mst_user_role", "mst_user.role_id", "=", "mst_user_role.id")
+    .select(
+      "mst_user.id as user_id",
+      "mst_user_role.id as role_id",
+      "mst_user.nik",
+      "mst_user.name",
+      "mst_user.email",
+      "mst_user.phone_number",
+      "mst_user.work_location",
+      "mst_user_role.role_name"
+    );
 
 insertUserRole = async (data) => await aio_cms("mst_user").insert(data);
 
-updateUserRole = async (nik, data) => {
-  await aio_cms("mst_user").where("nik", nik).update(data);
+updateUserRole = async (id, data) => {
+  await aio_cms("mst_user").where("id", id).update(data);
 };
 
-deleteUserRole = async (nik) =>
-  await aio_cms("mst_user").where("nik", nik).del();
+deleteUserRole = async (id) =>
+  await aio_cms("mst_user").where("id", id).del();
 
 module.exports = {
   getUserRole,

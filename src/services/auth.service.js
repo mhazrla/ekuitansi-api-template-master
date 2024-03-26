@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const { login } = require("../model/auth.model");
 const axios = require("axios");
 const https = require("https");
 

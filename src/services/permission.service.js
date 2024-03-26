@@ -1,42 +1,66 @@
-const model = require("../model/role_permissions.model");
+const { verifyToken } = require("../services/auth.service");
 
 const hasAccess = (permissionCode) => {
   return async (req, res, next) => {
-    try {
-      const { nik } = req.user;
-      const userPermissions = await model.getUserPermission(nik);
-      const permissionFound = userPermissions.some((permission) => {
-        return permission.permission_code === permissionCode;
-      });
-
-      if (permissionFound) {
-        next();
-      } else {
-        res.status(403).json({ error: "Forbidden" });
+    verifyToken(req, res, () => {
+      try {
+        const permissions = req.user.permissions.split(",");
+        if (permissions.includes(permissionCode)) {
+          next();
+        } else {
+          res.status(403).json({ error: "Forbidden" });
+        }
+      } catch (error) {
+        console.error("Error checking permissions:", error);
+        res.status(500).json({ error: "Internal Server Error" });
       }
-    } catch (error) {
-      console.error("Error checking permissions:", error);
-      throw new Error("Internal Server Error");
-    }
+    });
   };
 };
 
 const groupAndConcatPermissions = (data) => {
   const result = {};
   data.forEach((row) => {
-    if (!result[row.role_name]) {
-      result[row.role_name] = {
-        role_name: row.role_name,
-        role_detail: row.role_detail,
-        permission_code: "",
+    const { role_id, role_name, role_detail, permission_id, permission_code } =
+      row;
+    if (!result[role_name]) {
+      result[role_name] = {
+        role_id,
+        role_name,
+        role_detail,
+        permission: [{ id: permission_id, code: permission_code }],
       };
+    } else {
+      result[role_name].permission.push({
+        id: permission_id,
+        code: permission_code,
+      });
     }
-
-    result[row.role_name].permission_code += row.permission_code + ", ";
   });
 
-  Object.keys(result).forEach((role) => {
-    result[role].permission_code = result[role].permission_code.slice(0, -2);
+  return Object.values(result);
+};
+
+const groupAndConcatSingleRolePermissions = (data) => {
+  const result = {};
+
+  data.forEach((row) => {
+    const { role_id, role_name, role_detail, permission_id, permission_code } =
+      row;
+
+    if (!result[role_id]) {
+      result[role_id] = {
+        role_id,
+        role_name,
+        role_detail,
+        permission: [{ id: permission_id, code: permission_code }],
+      };
+    } else {
+      result[role_id].permission.push({
+        id: permission_id,
+        code: permission_code,
+      });
+    }
   });
 
   return Object.values(result);
@@ -44,5 +68,6 @@ const groupAndConcatPermissions = (data) => {
 
 module.exports = {
   groupAndConcatPermissions,
+  groupAndConcatSingleRolePermissions,
   hasAccess,
 };

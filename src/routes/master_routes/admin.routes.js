@@ -19,13 +19,21 @@ router.delete("/permission/:id", PermissionController.deletePermission);
 
 // User Role
 router.get("/user-data/user", UserRoleController.getAllUserRole);
+router.get("/user-data/user/:id", UserRoleController.getUserRole);
 router.post("/user-data/user", UserRoleController.insertUserRole);
-router.put("/user-data/user/:nik", UserRoleController.updateUserRole);
-router.delete("/user-data/user/:nik", UserRoleController.deleteUserRole);
+router.put("/user-data/user/:id", UserRoleController.updateUserRole);
+router.delete("/user-data/user/:id", UserRoleController.deleteUserRole);
 
 // User Permission
 router.get("/user-data/role", RolePermissionController.getAllRolePermission);
+router.get("/user-data/role/:role_id", RolePermissionController.getRolePermission);
 router.post("/user-data/role", RolePermissionController.insertRolePermission);
-router.put("/user-data/role/:role_id", RolePermissionController.updateRolePermission);
-router.delete("/user-data/role/:role_id", RolePermissionController.deleteRolePermission);
+router.put(
+  "/user-data/role/:role_id",
+  RolePermissionController.updateRolePermission
+);
+router.delete(
+  "/user-data/role/:role_id",
+  RolePermissionController.deleteRolePermission
+);
 module.exports = router;

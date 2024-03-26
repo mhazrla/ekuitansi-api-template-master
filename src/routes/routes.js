@@ -16,7 +16,7 @@ router.get("/not-found", function (req, res) {
 // authentication routes usage
 router.use("/auth/", auth_routes);
 // router.use("/admin", verifyToken, hasAccess("MSTR-CRUD"), adminRoutes);
-router.use("/admin", adminRoutes);
+router.use("/admin", verifyToken, hasAccess("MSTR-CRUD"), adminRoutes);
 
 // master data routes usage
 router.use("/master/", verifyToken, masterRoutes);

@@ -1,5 +1,6 @@
 const {
   groupAndConcatPermissions,
+  groupAndConcatSingleRolePermissions,
 } = require("../../services/permission.service");
 const model = require("../../model/role_permissions.model");
 const permissionModel = require("../../model/permission.model");
@@ -8,9 +9,15 @@ const api = require("../../tools/common");
 
 getAllRolePermission = async (req, res) => {
   let data = await model.getAllRolePermissions();
-
   const result = groupAndConcatPermissions(data);
 
+  return api.ok(res, result);
+};
+
+getRolePermission = async (req, res) => {
+  const { role_id } = req.params;
+  let data = await model.getRolePermission(role_id);
+  const result = groupAndConcatSingleRolePermissions(data);
   return api.ok(res, result);
 };
 
@@ -34,7 +41,7 @@ insertRolePermission = async (req, res) => {
   });
 
   if (!allPermissionsExist) {
-    return api.error(res, "Permission Code tidak ditemukan!", 404);
+    return api.error(res, "Permission code not found!", 404);
   }
 
   await model.deleteRolePermission(role_id);
@@ -75,7 +82,10 @@ updateRolePermission = async (req, res) => {
     await model.insertRolePermission({ role_id, permission_id: pid });
   }
 
-  return api.ok(res, { message: "Role permissions updated successfully." });
+  const rolePermission = await model.getRolePermission(role_id);
+  const result = groupAndConcatSingleRolePermissions(rolePermission);
+
+  return api.ok(res, result);
 };
 
 deleteRolePermission = async (req, res) => {
@@ -94,6 +104,7 @@ deleteRolePermission = async (req, res) => {
 
 module.exports = {
   getAllRolePermission,
+  getRolePermission,
   insertRolePermission,
   updateRolePermission,
   deleteRolePermission,

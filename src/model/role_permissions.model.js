@@ -13,10 +13,13 @@ getAllRolePermissions = async () => {
       "mst_user_permission.id"
     )
     .select(
+      "mst_user_role.id as role_id",
       "mst_user_role.role_name",
       "mst_user_role.detail as role_detail",
+      "mst_user_permission.id as permission_id",
       "mst_user_permission.code as permission_code"
-    );
+    )
+    .orderBy("map_role_permission.role_id");
 
   return result;
 };
@@ -52,7 +55,23 @@ getUserPermission = async (nik) => {
 };
 
 getRolePermission = async (role_id) => {
-  return await aio_cms("map_role_permission").where("role_id", role_id);
+  const result = await aio_cms("map_role_permission")
+    .join("mst_user_role", "map_role_permission.role_id", "mst_user_role.id")
+    .join(
+      "mst_user_permission",
+      "map_role_permission.permission_id",
+      "mst_user_permission.id"
+    )
+    .where("map_role_permission.role_id", role_id)
+    .select(
+      "map_role_permission.id",
+      "map_role_permission.role_id",
+      "mst_user_role.role_name",
+      "mst_user_role.detail as role_detail",
+      "map_role_permission.permission_id",
+      "mst_user_permission.code as permission_code"
+    );
+  return result;
 };
 
 insertRolePermission = async (data) => {
