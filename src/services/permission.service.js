@@ -4,15 +4,21 @@ const hasAccess = (permissionCode) => {
   return async (req, res, next) => {
     verifyToken(req, res, () => {
       try {
-        const permissions = req.user.permissions.split(",");
-        if (permissions.includes(permissionCode)) {
+        const permissions = req.user && req.user.permissions;
+
+        if (!permissions) {
+          return res.status(403).json({ error: "Forbidden" });
+        }
+
+        const permission = permissions.split(",");
+        if (permission.includes(permissionCode)) {
           next();
         } else {
-          res.status(403).json({ error: "Forbidden" });
+          return res.status(403).json({ error: "Forbidden" });
         }
       } catch (error) {
         console.error("Error checking permissions:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: "Internal Server Error" });
       }
     });
   };
