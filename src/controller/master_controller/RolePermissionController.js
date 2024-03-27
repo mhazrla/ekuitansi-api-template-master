@@ -71,18 +71,23 @@ findOrCreateRole = async (roleName, roleDetail) => {
 };
 
 insertRolePermissions = async (roleId, permissionIds) => {
-  const uniquePermissionIds = new Set(permissionIds);
-  for (let pid of uniquePermissionIds) {
-    await model.insertRolePermission({
-      role_id: roleId,
-      permission_id: pid,
-    });
+  try {
+    const uniquePermissionIds = new Set(permissionIds);
+    for (let pid of uniquePermissionIds) {
+      await model.insertRolePermission({
+        role_id: roleId,
+        permission_id: pid,
+      });
+    }
+  } catch (error) {
+    throw new Error("Failed to insert role permissions: " + error.message);
   }
 };
 
 insertRolePermission = async (req, res) => {
   try {
     const { role_name, permission_id, role_detail } = req.body;
+    
     const isValidated = validateRoleName(role_name);
 
     if (!isValidated)
@@ -93,6 +98,10 @@ insertRolePermission = async (req, res) => {
       );
 
     const roleId = await findOrCreateRole(role_name, role_detail);
+
+    if (typeof roleId === "number") {
+      return api.error(res, "Role already exists.", 409);
+    }
 
     const checkPermissions = await permissionModel.getAllPermissions();
     const permissionIds = checkPermissions.map((perm) => perm.id);
@@ -116,6 +125,7 @@ insertRolePermission = async (req, res) => {
     return api.error(res, "An error occurred while insert role.");
   }
 };
+
 
 updateRolePermission = async (req, res) => {
   try {

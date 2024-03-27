@@ -30,10 +30,9 @@ getUserRole = async (req, res) => {
 insertUserRole = async (req, res) => {
   try {
     const { name, nik, email, phone_number, work_location, role_id } = req.body;
-    
+
     const role = await roleModel.getRole(role_id);
     if (role.length === 0) return api.error(res, "Role not found!", 404);
-
     const user = await userRoleModel.insertUserRole({
       name,
       nik,
