@@ -25,32 +25,16 @@ insertRolePermission = async (req, res) => {
   const { role_id, permission_id } = req.body;
   const uniquePermissionIds = new Set(permission_id);
 
-  const role = await roleModel.getRole(role_id);
-  if (role.length === 0) {
-    return api.error(res, "Role Not Found", 404);
-  }
-
-  // Verify Permission
-  const checkPermissions = await permissionModel.getAllPermissions();
-  const permissionIds = checkPermissions.map((perm) => perm.id);
-
-  // Check if each permission_id of the request exists in the database
-  const allPermissionsExist = [...uniquePermissionIds].every((pid) => {
-    const permissionExists = permissionIds.includes(pid);
-    return permissionExists;
-  });
-
-  if (!allPermissionsExist) {
-    return api.error(res, "Permission code not found!", 404);
-  }
-
   await model.deleteRolePermission(role_id);
 
   for (let pid of uniquePermissionIds) {
     await model.insertRolePermission({ role_id, permission_id: pid });
   }
 
-  return api.ok(res, { message: "Role permissions assigned successfully." });
+  let data = await model.getRolePermission(role_id);
+  const result = groupAndConcatSingleRolePermissions(data);
+
+  return api.ok(res, result);
 };
 
 updateRolePermission = async (req, res) => {
