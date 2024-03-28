@@ -25,7 +25,6 @@ const hasAccess = (permissionCode) => {
 };
 
 const groupAndConcatPermissions = (data) => {
-  throw new Error("OKKK");
   const result = {};
   data.forEach((row) => {
     const { role_id, role_name, role_detail, permission_id, permission_code } =
